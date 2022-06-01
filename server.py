@@ -12,9 +12,10 @@ def serve():
   handler.authorizer = authorizer
   handler.permit_foreign_addresses = True
   handler.banner = "pyftpdlib FTP Server"
-  handler.passive_ports = range(3000, 3010)
+  handler.masquerade_address = '127.0.0.1'
+  handler.passive_ports = range(30000, 30009)
 
-  address = ("", 21)
+  address = ('', 21)
   server = FTPServer(address, handler)
 
   server.max_cons = 256
