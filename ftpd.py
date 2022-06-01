@@ -1,5 +1,6 @@
 import argparse
 from server import serve
+import os
 
 def main() -> None:
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -8,7 +9,7 @@ def main() -> None:
     help="Username for FTP access"
   )
   parser.add_argument(
-    '--password', default='root',
+    '--password', default=os.environ["ROOT_PASS"],
     help="Password for the FTP user"
   )
   parser.add_argument('--host', default='0.0.0.0')
