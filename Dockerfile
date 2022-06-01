@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-LABEL maintainer="Sergio Rivera <sriveralopez50@gmail.com>""
+LABEL maintainer="Sergio Rivera <sriveralopez50@gmail.com>"
 
 RUN pip install pyftpdlib
 
