@@ -1,27 +1,37 @@
+import os.path
+from helper import mkdir
+
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 
-def serve():
+FTP_ROOT = '/ftp/file-servers'
+
+def serve(user: str, password: str, host: str, port: int, passive: str, anon: bool) -> None:
   authorizer = DummyAuthorizer()
 
-  authorizer.add_user('root', 'root', './file-servers/auth-fs/', perm='elradfmwMT')
-  authorizer.add_anonymous('./file-servers/anon-fs/')
+  # Create authorized users
+
+  user_dir = os.path.join(FTP_ROOT, user)
+  mkdir(user_dir)
+  authorizer.add_user(user, password, user_dir, perm='elradfmwMT')
+
+  if anon:
+    anon_dir = os.path.join(FTP_ROOT, 'anon')
+    mkdir(anon_dir)
+    authorizer.add_anonymous(anon_dir)
+
+  # Setup FTP handler
 
   handler = FTPHandler
   handler.authorizer = authorizer
   handler.permit_foreign_addresses = True
-  handler.banner = "pyftpdlib FTP Server"
-  handler.masquerade_address = '127.0.0.1'
-  handler.passive_ports = range(30000, 30009)
 
-  address = ('', 21)
-  server = FTPServer(address, handler)
+  passive_ports = [int(port) for port in passive.split('-')]
+  assert len(passive_ports) == 2
+  handler.passive_ports = range(passive_ports[0], passive_ports[1])
 
+  server = FTPServer((host, port), handler)
   server.max_cons = 256
   server.max_cons_per_ip = 5
-
   server.serve_forever()
-
-if __name__ == '__main__':
-  serve()
